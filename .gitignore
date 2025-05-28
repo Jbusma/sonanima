@@ -57,9 +57,9 @@ Icon?
 temp_*.wav
 temp_*.mp3
 
-# Data directories
+# Data directories (but not source code)
 data/
-memory/
+/memory/
 models/
 *.db
 *.sqlite
@@ -90,9 +90,9 @@ htmlcov/
 .dmypy.json
 dmypy.json
 
-# Memory Data (top-level)
-memory/*.db*
-memory/vector_db/
+# Memory Data (top-level only, not source code)
+/memory/*.db*
+/memory/vector_db/
 !memory/.gitkeep
 
 # Model Storage (ignore model files, keep structure)
