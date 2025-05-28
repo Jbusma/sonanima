@@ -1,0 +1,161 @@
+/*
+Sonanima Development Rules - Cursor Command Chaining
+
+CRITICAL: Command blocks MUST use exactly ```bash or ```shell - nothing else works
+
+WORKING SYNTAX:
+```bash
+source venv/bin/activate && python main.py
+```
+
+BROKEN SYNTAX (never use these):
+```language=bash
+```bash:path=file
+```language=language=bash
+
+KEY RULES:
+- Chain commands with &&  
+- No comments inside bash blocks (breaks run button)
+- For file edits use language:path like ```python:file.py
+- Always activate venv first: source venv/bin/activate && 
+- One command should do the full task
+- Include simple echo statements for progress
+
+EXAMPLES:
+Setup: python3 -m venv venv && source venv/bin/activate && pip install deps
+Run: source venv/bin/activate && python sonanima_core.py  
+Test: source venv/bin/activate && python -m pytest && echo "Tests passed"
+
+REMEMBER: Only ```bash or ```shell create run buttons. Everything else breaks.
+*/
+
+# Sonanima Development Rules
+
+## Project Organization & Architecture
+
+### Provider-Based Module Structure
+- Organize by TTS/STT provider: `src/sonanima/tts/elevenlabs/`, `src/sonanima/tts/local/`
+- Each provider has focused modules: `streaming.py`, `integration.py`, etc.
+- Clear separation of concerns by functionality within providers
+- Use `__init__.py` to export main classes from each provider
+
+### Testing Strategy - Two-Tier Approach
+1. **Interactive Tests** (`unified_tts_tester.py`): Qualitative testing for audio quality, perceived latency, user experience
+2. **Unit Tests** (`test_*.py`): Simple pass/fail code quality tests that match 1:1 with src files
+   - `tests/tts/elevenlabs/test_streaming.py` ↔ `src/sonanima/tts/elevenlabs/streaming.py`
+   - Focus on imports, initialization, method existence, error handling
+   - Exit with proper status codes for CI/CD integration
+
+### File Organization Rules
+- **NO README files in test directories** - comments in code are sufficient
+- **NO random README files** - don't create README.md files unless specifically requested
+- **NO test functions in production code** - move any `test_*` methods to tests/ directory
+- **NO creating new files unless specifically requested** - use existing files and structure
+- **Clean test directories** - remove redundant demo files, keep only essential tests
+- **Output management** - all generated files go to `tests/tts/output/`
+- **1:1 mapping** - each src file should have a corresponding test file
+
+## Command Chaining - Cursor Run Button Rules
+- ALWAYS use ```bash or ```shell with NOTHING else after the language tag
+- NO comments (# ...) inside runnable bash blocks - they break the run button
+- For file patches use language:path format like ```python:file.py
+- NEVER use ```language=bash or ```bash:path=... - those break detection
+- Chain commands with && for single-click execution
+- Group related commands into logical blocks
+
+### Examples:
+```bash
+source venv/bin/activate && python tests/tts/elevenlabs/test_streaming.py
+```
+```bash
+cd tests/tts && python unified_tts_tester.py
+```
+
+## TTS Development Patterns
+
+### Environment Handling
+- Use flexible .env loading that works from any directory
+- Calculate project root relative to current file location
+- Graceful fallback when API keys missing - don't crash, return False
+- Log environment loading success/failure for debugging
+- Just install missing deps instead of creating complex fallbacks
+
+### Audio Testing Best Practices
+- Interactive tests for qualitative assessment (latency perception, audio quality)
+- Unit tests for code structure and error handling
+- Save test audio files to organized output directory
+- Include performance metrics (TTFB, chunk count, file size)
+- Test multiple playback methods (afplay, default app)
+
+### Module Import Patterns
+```python
+# Add src to path for tests
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / "src"))
+from sonanima.tts.elevenlabs.streaming import SonanimaStreamingTTS
+```
+
+### Error Handling Patterns
+- APIs should fail gracefully without crashing
+- Return boolean success indicators
+- Provide helpful error messages with context
+- Don't expose sensitive API keys in error messages
+
+## WebSocket Streaming Optimization
+- Use aggressive chunk scheduling for low latency: `[50, 120, 160, 290]`
+- Target sub-0.6s time-to-first-byte for "ultra-fast" rating
+- Use `eleven_flash_v2_5` model for speed optimization
+- Implement proper WebSocket connection cleanup
+- Stream to temporary files with immediate playback
+
+## Code Quality Standards
+- Provider modules should be self-contained with minimal dependencies
+- Use type hints for public APIs
+- Include docstrings for all public methods
+- Async methods for streaming operations
+- Proper resource cleanup in finally blocks
+
+## Development Workflow
+1. **Interactive development**: Use `unified_tts_tester.py` for qualitative testing
+2. **Code quality**: Run unit tests with `python test_*.py` 
+3. **Organization**: Keep src and tests organized by provider
+4. **Performance**: Target specific latency goals (sub-0.6s for TTS)
+5. **Cleanup**: Remove redundant files, maintain clean structure
+
+## Test Runner Integration
+```python
+# run_tests.py should support both interactive and unit testing
+# Interactive: unified_tts_tester.py
+# Unit tests: provider-specific test_*.py files
+```
+
+This structure enables rapid development while maintaining code quality and clear organization.
+
+## Real-Time Performance Rules
+
+### Dependency Verification First
+- **ALWAYS check if tools are installed** before implementing solutions
+- Use `which tool_name` or similar to verify availability 
+- Install missing dependencies before building complex workarounds
+- Include dependency checks in all setup scripts
+
+### Performance Failure Thresholds
+- **Real-time systems**: >2s latency is fundamental failure, not parameter tuning issue
+- **Conversational TTS**: >1s is poor, >3s is broken, >10s is completely wrong
+- If metrics show failure, **stop and fix root cause** - don't optimize broken approaches
+
+### Tool Selection Hierarchy  
+- **Purpose-built tools beat complex ones**: sox for audio streaming vs ffmpeg with flags
+- Try simple, domain-specific tools first (sox, afplay) before complex ones (ffmpeg, PyAudio)
+- Prefer tools designed for the exact use case over general-purpose tools with parameters
+
+### Real-World Metrics Priority
+- **Measure user experience**, not just API metrics
+- "Time to first audio heard" matters more than "time to first byte received" 
+- Test actual audio playback, not just successful API calls
+- Performance ratings should reflect user perception, not technical milestones
+
+### Root Cause vs Workaround Rule
+- If something takes >5x expected time, it's probably the wrong approach entirely
+- **Fix the fundamental issue** before building fallback chains
+- Don't create complex error handling for fundamentally broken approaches
+- Simple solutions that work beat complex solutions that struggle

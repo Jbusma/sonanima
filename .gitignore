@@ -1,0 +1,114 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.test
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+# Audio files (temporary)
+*.wav
+*.mp3
+*.m4a
+temp_*.wav
+temp_*.mp3
+
+# Data directories
+data/
+memory/
+models/
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
+
+# Test outputs
+tests/*/output/
+test_output/
+
+# API keys and secrets
+secrets/
+keys/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Memory Data (top-level)
+memory/*.db*
+memory/vector_db/
+!memory/.gitkeep
+
+# Model Storage (ignore model files, keep structure)
+src/sonanima/tts/models/*/
+src/sonanima/stt/models/*/
+!src/sonanima/tts/models/.gitkeep
+!src/sonanima/stt/models/.gitkeep
+
+# Temporary files
+*.tmp
+*.temp
+temp_audio.wav
+mic_test.wav
+
+# Audio files (except examples)
+*.wav
+*.mp3
+*.m4a
+!tests/examples/*.wav 

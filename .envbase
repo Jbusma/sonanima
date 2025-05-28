@@ -1,0 +1,25 @@
+# LLM Provider Configuration
+# Choose one: anthropic, openai, ollama
+LLM_PROVIDER=anthropic
+
+# Anthropic (Claude) Configuration
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
+ANTHROPIC_MODEL=claude-3-5-sonnet-20241022
+
+# OpenAI Configuration  
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_MODEL=gpt-4
+
+# Ollama Configuration (local models)
+OLLAMA_MODEL=llama3.2
+
+# TTS Configuration
+TTS_PROVIDER=elevenlabs
+ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
+
+# Optional: Override default voice/emotion
+DEFAULT_VOICE=Rachel
+DEFAULT_EMOTION=neutral
+
+# Legacy/Optional
+HUGGINGFACE_TOKEN=your_hf_token_here 
